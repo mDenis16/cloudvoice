@@ -90,3 +90,6 @@ pages_build_output_dir = ".vercel/output/static"
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "cloud-voice-db"
 database_id = "08265cf5-a02f-4ebb-80f9-c138e440b3be"
+
+[env.preview.vars]
+JWT_KEY = 'xabsdc'
