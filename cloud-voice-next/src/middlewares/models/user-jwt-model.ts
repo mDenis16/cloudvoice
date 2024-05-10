@@ -1,7 +1,8 @@
 export enum EAccessLevel {
-    USER = 0,
-    MODERATOR = 1,
-    ADMIN = 2
+    NONE,
+    USER = 1,
+    MODERATOR = 2,
+    ADMIN = 3
 }
 export default interface UserJWTModel {
     id: number
