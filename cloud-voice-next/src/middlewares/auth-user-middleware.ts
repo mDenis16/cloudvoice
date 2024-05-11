@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 export let getAuthSever = async (): Promise<UserJWTModel | null> => {
   let currentCtx = getRequestContext();
 
-  let jwtSecureKey = currentCtx.env.JWT_SECURE_KEY;
+  let jwtSecureKey = currentCtx.env.jwt_secret_key;
 
   let token = cookies().get("_jwt");
   if (!token) return null;
@@ -35,7 +35,7 @@ export let getAuthSever = async (): Promise<UserJWTModel | null> => {
 
   return null;
 };
-export function useAuthUserMiddlewareAPI(
+export function authUserMiddlewareAPI(
   accessLevel: EAccessLevel,
   callback: any
 ) {
@@ -48,7 +48,7 @@ export function useAuthUserMiddlewareAPI(
   };
 }
 
-export function useAuthUserMiddleware(
+export function authUserMiddleware(
   accessLevel: EAccessLevel,
   callback: any
 ) {

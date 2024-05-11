@@ -3,5 +3,5 @@
 
 interface CloudflareEnv {
     DB: D1Database
-    JWT_SECURE_KEY: string
+    jwt_secret_key: string
 }

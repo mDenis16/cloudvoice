@@ -1,15 +1,12 @@
+import getDatabase from "@/database/get-database";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { PrismaD1 } from "@prisma/adapter-d1";
 import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
 
 export default async function Home() {
-  let cloudflare_db = getRequestContext().env.DB;
 
-  const adapter = new PrismaD1(cloudflare_db);
-  const prisma = new PrismaClient({ adapter });
-
-  const users = await prisma.user.findMany();
+  const users = await getDatabase().user.findMany();
   const result = JSON.stringify(users);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
