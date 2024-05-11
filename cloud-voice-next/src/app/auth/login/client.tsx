@@ -30,7 +30,7 @@ export default function Client({
     useState<Record<string, string>>();
 
   const [actionResponseResult, setActionResponseResult] =
-    useState<EActionLoginResponse | null>();
+    useState<EActionLoginResponse | undefined>();
 
   let onChange = (e: React.FormEvent<HTMLInputElement>) => {
     //@ts-ignore
@@ -133,7 +133,7 @@ export default function Client({
         >
           Login
         </button>
-        {actionResponseResult !== null ? (
+        {actionResponseResult !== undefined ? (
           <DisplayActionResult result={actionResponseResult} />
         ) : null}
       </div>

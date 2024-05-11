@@ -12,7 +12,7 @@ import {
 } from "./login-action-typedef";
 import { loginActionSchema } from "@/validators/login-action-validator";
 import { cookies } from "next/headers";
-import UserJWTModel from "@/middlewares/models/user-jwt-model";
+import UserJWTModel, { EAccessLevel } from "@/middlewares/models/user-jwt-model";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export async function loginAction(
@@ -39,7 +39,7 @@ export async function loginAction(
       id: user.id,
       username: user.username,
       email: user.email,
-      accessLevel: 0,
+      accessLevel: EAccessLevel.USER,
     })
       .setProtectedHeader({ alg })
       .setIssuedAt()
