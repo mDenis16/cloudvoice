@@ -60,3 +60,17 @@ export function authUserMiddleware(
     return await callback(user);
   };
 }
+
+export function authUserMiddlewareAction(
+  accessLevel: EAccessLevel,
+  callback: any
+) {
+  return async (request: any) => {
+    "use server";
+    let user: UserJWTModel | null = await getAuthSever();
+    console.info("user level " + user?.accessLevel);
+    if (user == null || user.accessLevel <= 0) redirect("/auth/");
+
+    return await callback(user, request);
+  };
+}

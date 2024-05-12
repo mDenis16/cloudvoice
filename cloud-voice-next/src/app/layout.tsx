@@ -16,7 +16,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="flex h-screen bg-gray-900">
+          {/* Sidebar */}
+          <div className="w-1/6 bg-gray-900">
+            {/* Sidebar content */}
+            <div className="text-white p-5">Friends</div>
+
+            <div className="flex flex-row">
+              <div className="w-full p-5">Direct messages</div>
+              <div className="h-full p-5 text-white font-">+</div>
+            </div>
+          </div>
+          {children}
+          {/* Chat window */}
+        </div>
+      </body>
     </html>
   );
 }
