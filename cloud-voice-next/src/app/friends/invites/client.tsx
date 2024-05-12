@@ -74,9 +74,7 @@ export default function Client({
       }
     }
   };
-  let respondInvite = async (id: number, respond: boolean ) => {
-    await friendRespondAction
-  }
+  let respondInvite = async (id: number, respond: boolean) => {};
 
   let DisplayActionResult = ({
     result,
@@ -106,7 +104,18 @@ export default function Client({
             Please try to not invite yourself again.
           </p>
         );
-
+      case EActionFriendInviteResponseResult.ALREADY_INVITED:
+        return (
+          <p className="font-medium text-red-400 mt-4">
+           Already invited.
+          </p>
+        );
+        case EActionFriendInviteResponseResult.ALREADY_FRIENDS:
+          return (
+            <p className="font-medium text-red-400 mt-4">
+             Already friends.
+            </p>
+          );
       case EActionFriendInviteResponseResult.VALIDATION_ERROR:
         return (
           <p className="font-medium text-red-400 mt-4">
@@ -116,7 +125,11 @@ export default function Client({
         );
     }
   };
-
+  let _localRespondInvite = async (id: number, respond: boolean) => {
+    let inv = await friendRespondAction({ id: id, respond: respond });
+    console.info(`_localRespondInvite called ${respond}`);
+    router.refresh();
+  };
   return (
     <div className="w-full flex flex-col">
       <p className="pl-5 pt-5 text-blue-300 text-bold text-xl">Add friend</p>
@@ -138,14 +151,13 @@ export default function Client({
         >
           Send friend request
         </button>
-       
       </div>
 
       <div className="pl-5">
         {actionResponseResult !== undefined ? (
           <DisplayActionResult result={actionResponseResult} />
         ) : null}
-         {validationMessages && validationMessages["username"] ? (
+        {validationMessages && validationMessages["username"] ? (
           <p className="text-red-500 mt-2">{validationMessages["username"]}</p>
         ) : null}
       </div>
@@ -164,6 +176,7 @@ export default function Client({
                       id: inviteModel.id,
                       type: EFriendInviteType.INBOUND,
                     }}
+                    respondInvite={_localRespondInvite}
                   />
                 );
               })}
@@ -184,7 +197,6 @@ export default function Client({
                       id: inviteModel.id,
                       type: EFriendInviteType.OUTBOUND,
                     }}
-                    respondInvite={respondInvite}
                   />
                 );
               })}

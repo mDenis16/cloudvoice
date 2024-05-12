@@ -30,6 +30,7 @@ model User {
 }
 
 model Friend {
+  id            Int       @id @default(autoincrement())
   friendsOf   User @relation("friendsOf", fields: [friendsOfId], references: [id])
   friendsOfId Int
   friends     User @relation("friends", fields: [friendsId], references: [id])

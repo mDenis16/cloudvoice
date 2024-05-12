@@ -38,31 +38,48 @@ export let friendInviteAction = authUserMiddlewareAction(
 
       let invitedUser = await prisma?.user.findFirst({
         where: { username: request.username },
+        include: {
+          friends: {
+            where: {
+              friendsOfId: requesterUser.id,
+            },
+          },
+          receivedFriendInvites: {
+            where: {
+              senderId: requesterUser.id,
+            },
+          },
+          sentFriendInvites: {
+            where: {
+              receiverId: requesterUser.id,
+            },
+          },
+        },
       });
 
       if (invitedUser == null)
         return { result: EActionFriendInviteResponseResult.INVALID_USERNAME };
 
-      
       if (invitedUser.id == requesterUser.id)
         return {
           result: EActionFriendInviteResponseResult.CANNOT_INVITE_YOURSELF,
         };
 
-      let friendInvite = await prisma.friendInvite.findFirst({
-        where: {
-          OR: [
-            {
-              senderId: requesterUser.id,
-            },
-            {
-              receiverId: requesterUser.id,
-            },
-          ],
-        },
-      });
+      if (invitedUser.receivedFriendInvites.length > 0) {
+        console.info("already invited");
+        return {
+          result: EActionFriendInviteResponseResult.ALREADY_INVITED,
+        };
+      }
+      
+      if (invitedUser.friends.length > 0) {
+        console.info("already friends");
+        return {
+          result: EActionFriendInviteResponseResult.ALREADY_FRIENDS,
+        };
+      }
 
-      if (friendInvite !== null && friendInvite.senderId == invitedUser.id) {
+      if (invitedUser.sentFriendInvites.length > 0) {
         await prisma.friend.createMany({
           data: [
             {
@@ -74,6 +91,16 @@ export let friendInviteAction = authUserMiddlewareAction(
               friendsOfId: requesterUser.id,
             },
           ],
+        });
+
+        console.info(
+          `Now ${invitedUser.username} is friend with ${requesterUser.username}`
+        );
+
+        await prisma.friendInvite.delete({
+          where: {
+            id: invitedUser.sentFriendInvites[0].id,
+          },
         });
 
         return { result: EActionFriendInviteResponseResult.SUCCESS };
