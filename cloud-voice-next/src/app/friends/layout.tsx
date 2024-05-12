@@ -30,7 +30,7 @@ export default function Layout({
         <div className="text-normal font-xl font p-3 grid grid-cols-5 gap-2 text-center">
           <Link href={"/friends/online"}>Online</Link>
           <Link href={"/friends/all"}>All</Link>
-          <Link href={"/friends/requests"}>Invites</Link>
+          <Link href={"/friends/invites"}>Invites</Link>
           <Link href={"/friends/blocked"}>Blocked</Link>
           <Link href={"/friends/requests"}>Add</Link>
         </div>

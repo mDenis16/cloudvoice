@@ -13,13 +13,11 @@ import {
   ActionFriendInviteRequest,
   EActionFriendInviteResponseResult,
   ActionFriendInviteResponse,
+  ActionFriendInviteModel,
 } from "@/app/actions/friends/friend-invite-action-typedef";
 import { friendInviteActionSchema } from "@/validators/friend-invite-validators";
 import { ActionFriendRespondFn } from "../../actions/friends/friend-respond-action-typedef";
-import {
-  ActionFriendInviteModel,
-  ActionGetFriendInvitesFn,
-} from "@/app/actions/friends/get-friend-invites-action-typedef";
+import { ActionGetFriendInvitesFn } from "@/app/actions/friends/get-friend-invites-action-typedef";
 import UserJWTModel from "@/middlewares/models/user-jwt-model";
 
 export default function Client({
@@ -43,8 +41,14 @@ export default function Client({
   const [validationMessages, setValidationMessages] =
     useState<Record<string, string>>();
 
-  const [friendInvites, setFriendInvites] =
-    useState<Array<ActionFriendInviteModel> | null>(friendInvitesSSR);
+  useEffect(() => {
+    getFriendInvitesAction({ limit: 10 }).then((response) => {
+      if (response.data) setFriendInvites(response.data);
+    });
+  }, []);
+  const [friendInvites, setFriendInvites] = useState<
+    Array<ActionFriendInviteModel>
+  >([]);
 
   const [actionResponseResult, setActionResponseResult] = useState<
     EActionFriendInviteResponseResult | undefined
@@ -61,7 +65,14 @@ export default function Client({
       await friendInviteActionSchema().validateAsync(formState);
       setValidationMessages({});
       let response = await friendInviteAction(formState);
-
+      if (
+        response.result == EActionFriendInviteResponseResult.SUCCESS &&
+        response.data
+      ) 
+        setFriendInvites([...friendInvites, response.data]);
+      else if (response.result == EActionFriendInviteResponseResult.SUCCESS_EACHOTHER && response.data !== undefined)
+        setFriendInvites(friendInvites.filter(invite => invite.id !== response.data?.id));
+      
       console.info("invites " + JSON.stringify(response));
       setActionResponseResult(response.result);
     } catch (ex: any) {
@@ -106,16 +117,12 @@ export default function Client({
         );
       case EActionFriendInviteResponseResult.ALREADY_INVITED:
         return (
-          <p className="font-medium text-red-400 mt-4">
-           Already invited.
-          </p>
+          <p className="font-medium text-red-400 mt-4">Already invited.</p>
         );
-        case EActionFriendInviteResponseResult.ALREADY_FRIENDS:
-          return (
-            <p className="font-medium text-red-400 mt-4">
-             Already friends.
-            </p>
-          );
+      case EActionFriendInviteResponseResult.ALREADY_FRIENDS:
+        return (
+          <p className="font-medium text-red-400 mt-4">Already friends.</p>
+        );
       case EActionFriendInviteResponseResult.VALIDATION_ERROR:
         return (
           <p className="font-medium text-red-400 mt-4">

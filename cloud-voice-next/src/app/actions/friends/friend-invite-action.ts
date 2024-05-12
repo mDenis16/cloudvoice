@@ -8,6 +8,7 @@ import {
   ActionFriendInviteRequest,
   EActionFriendInviteResponseResult,
   ActionFriendInviteResponse,
+  ActionFriendInviteModel,
 } from "./friend-invite-action-typedef";
 import { friendInviteActionSchema } from "@/validators/friend-invite-validators";
 import {
@@ -19,11 +20,6 @@ import UserJWTModel, {
   EAccessLevel,
 } from "@/middlewares/models/user-jwt-model";
 
-// export async function friendInviteAction(
-//   request: ActionFriendInviteRequest
-// ): Promise<ActionFriendInviteResponse> {
-
-// }
 export let friendInviteAction = authUserMiddlewareAction(
   EAccessLevel.USER,
   async (
@@ -71,7 +67,7 @@ export let friendInviteAction = authUserMiddlewareAction(
           result: EActionFriendInviteResponseResult.ALREADY_INVITED,
         };
       }
-      
+
       if (invitedUser.friends.length > 0) {
         console.info("already friends");
         return {
@@ -103,18 +99,32 @@ export let friendInviteAction = authUserMiddlewareAction(
           },
         });
 
-        return { result: EActionFriendInviteResponseResult.SUCCESS };
+        return { result: EActionFriendInviteResponseResult.SUCCESS_EACHOTHER };
       }
 
-      await prisma.friendInvite.create({
+      let invite = await prisma.friendInvite.create({
         data: {
           senderId: requesterUser.id,
           receiverId: invitedUser.id,
           status: 0,
         },
       });
-
-      return { result: EActionFriendInviteResponseResult.SUCCESS };
+      console.info("invite " + JSON.stringify(invite));
+      return {
+        result: EActionFriendInviteResponseResult.SUCCESS,
+        data: {
+          id: invite.id,
+          sender: {
+            username: requesterUser.username,
+          },
+          receiver: {
+            username: invitedUser.username,
+          },
+          senderId: requesterUser.id,
+          receiverId: invitedUser.id,
+          status: 0
+        },
+      };
     } catch (ex: any) {
       if (ex instanceof Joi.ValidationError && ex.details.length > 0)
         return { result: EActionFriendInviteResponseResult.VALIDATION_ERROR };

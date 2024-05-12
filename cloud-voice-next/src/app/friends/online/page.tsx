@@ -6,14 +6,11 @@ import UserJWTModel, {
 import { useState } from "react";
 
 let Page = authUserMiddleware(EAccessLevel.USER, async (user: UserJWTModel) => {
-  const friendsWithFriendsOfIdOnly = await getDatabase().friends.findMany({
-    where: { friendsOfId: user.id },
-  });
+
 
   return (
     <div className="w-full h-full bg-gray-800 flex flex-col">
-      {JSON.stringify(friendsWithFriendsOfIdOnly)}
-
+   
       <p className="text-normal p-5 font-xl">Online friends</p>
 
       <div className="w-full h-128 bg-gray-500 p-5">
