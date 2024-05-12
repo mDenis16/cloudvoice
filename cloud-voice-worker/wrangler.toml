@@ -1,0 +1,20 @@
+name = "cloud-voice-worker"
+main = "src/index.ts"
+compatibility_date = "2024-03-14"
+routes = [
+	{ pattern = "cloudvoice-worker.topor.dev", custom_domain = true }
+]
+
+[[durable_objects.bindings]]
+name = "VoiceSessions"
+class_name = "VoiceSession"
+
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "cloud-voice-db"
+database_id = "08265cf5-a02f-4ebb-80f9-c138e440b3be"
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["VoiceSession"]
